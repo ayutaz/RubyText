@@ -31,9 +31,9 @@ public class RubyText : MonoBehaviour
         TextMeshProUGUI     ruby;
         RectTransform       rubyRect;
 
-        TMP_CharacterInfo[] CharacterInfos;
-        int                 PosTop;
-        int                 PosBtm;
+        TMP_CharacterInfo[] characterInfos;
+        int                 posTop;
+        int                 posBtm;
 
         float               rubyWidth;
 
@@ -65,7 +65,7 @@ public class RubyText : MonoBehaviour
         /// </summary>
         public void Refresh()
         {
-            float textWidth = (CharacterInfos[PosBtm].topRight.x - CharacterInfos[PosTop].topLeft.x);
+            float textWidth = (characterInfos[posBtm].topRight.x - characterInfos[posTop].topLeft.x);
 
             ruby.SetActive(false);
             ruby.SetText(RubyWord);
@@ -90,8 +90,6 @@ public class RubyText : MonoBehaviour
                 rubyRect.SetWidth(rubyWidth);
             }
             rubyRect.SetHeight(ruby.preferredHeight);
-
-//Debug.Log($"{RubyWord} width: {rubyWidth}");
         }
 
         /// <summary>
@@ -110,13 +108,12 @@ public class RubyText : MonoBehaviour
         /// <param name="a">最終文字のα</param>
         public void UpdateAlpha(int messagePosition, float a)
         {
-//Debug.Log($"{BottomInfo.color}");
-            if (PosBtm > messagePosition)
+            if (posBtm > messagePosition)
             {
                 ruby.color = new Color(ruby.color.r, ruby.color.g, ruby.color.b, 0);
             }
             else
-            if (PosBtm < messagePosition)
+            if (posBtm < messagePosition)
             {
                 ruby.color = new Color(ruby.color.r, ruby.color.g, ruby.color.b, 1);
             }
@@ -132,7 +129,6 @@ public class RubyText : MonoBehaviour
         /// <param name="a">最終文字のα</param>
         public void UpdateAlpha(float a)
         {
-//Debug.Log($"{BottomInfo.color}");
             ruby.color = new Color(ruby.color.r, ruby.color.g, ruby.color.b, a);
         }
 
@@ -154,21 +150,21 @@ public class RubyText : MonoBehaviour
         /// <param name="posBtm">ルビ終了文字位置</param>
         public void SetTmpInfo(TMP_CharacterInfo[] characterInfos, int posTop, int posBtm)
         {
-            CharacterInfos = characterInfos;
-            PosTop         = posTop;
-            PosBtm         = posBtm;
+            this.characterInfos = characterInfos;
+            this.posTop         = posTop;
+            this.posBtm         = posBtm;
 
-            var top = CharacterInfos[PosTop];
-            var btm = CharacterInfos[posBtm];
+            var top = this.characterInfos[this.posTop];
+            var btm = this.characterInfos[posBtm];
 
             float y = top.ascender;
             float x = (top.topLeft.x + btm.topRight.x) / 2;
 
             rubyRect.SetXY(x, y);
 
-            float r = (float)CharacterInfos[PosBtm].color.r / 255;
-            float g = (float)CharacterInfos[PosBtm].color.g / 255;
-            float b = (float)CharacterInfos[PosBtm].color.b / 255;
+            float r = (float)this.characterInfos[this.posBtm].color.r / 255;
+            float g = (float)this.characterInfos[this.posBtm].color.g / 255;
+            float b = (float)this.characterInfos[this.posBtm].color.b / 255;
 
             ruby.color = new Color(r, g, b, 0);
         }
@@ -483,9 +479,10 @@ public class RubyText : MonoBehaviour
             // 一旦テキストが見えない状態で全テキストを描画する（文字情報を取得するため）
             Text.SetText(message);
 
-            // １フレーム経過しないと文字情報が更新されない
-            yield return null;
         }
+
+        // １フレーム経過しないと文字情報が更新されない
+        yield return null;
 
         // 全文字が表示された状態のフォントサイズがフォント最大サイズとする
         // （これをしておかないと、文字が少ない時バカでかい文字になるなど、不安定なテキスト描画になる）

@@ -29,10 +29,10 @@ public class Sample : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        RubyText.SetWH(1400, 300);
+        RubyText.SetWH(900, 300);
         RubyText.SetFontSize(160);
 
-        RubyText.SetText("この<color=red>{数:かず}</color>は、{一般的:いっぱんてき}に「{ナ:na}{ノ:no}」という{単位:たんい}{接頭辞:せっとうじ}を{使用:しよう}して{表:あらわ}されます。");
+        RubyText.SetText("この<color=red>{数:かず}</color>は、{一般的:いっぱんてき}に\r\n「{ナ:na}{ノ:no}」という\r\n{単位:たんい}{接頭辞:せっとうじ}を{使用:しよう}して{表:あらわ}されます。");
 
         // 表示位置の設定
         Position.onValueChanged.AddListener(
@@ -65,7 +65,7 @@ public class Sample : MonoBehaviour
         Draw.onClick.AddListener(
             () =>
             {
-                RubyText.SetText("この<color=red>{数:かず}</color>は、{一般的:いっぱんてき}に「{ナ:na}{ノ:no}」という{単位:たんい}{接頭辞:せっとうじ}を{使用:しよう}して{表:あらわ}されます。");
+                RubyText.SetText("この<color=red>{数:かず}</color>は、{一般的:いっぱんてき}に\r\n「{ナ:na}{ノ:no}」という\r\n{単位:たんい}{接頭辞:せっとうじ}を{使用:しよう}して{表:あらわ}されます。");
                 RubyText.StartAutoForward();
             }
         );
