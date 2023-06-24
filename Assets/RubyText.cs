@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,10 +15,10 @@ public class RubyText : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI     Ruby;
 
-    [SerializeField, Tooltip("‚P•¶šA‚Ü‚½‚Í•¶Í‘S‘Ì‚ğ•\¦‚·‚éŠÔi•bj"), Range(0.01f, 1)]
+    [SerializeField, Tooltip("ï¼‘æ–‡å­—ã€ã¾ãŸã¯æ–‡ç« å…¨ä½“ã‚’è¡¨ç¤ºã™ã‚‹æ™‚é–“ï¼ˆç§’ï¼‰"), Range(0.01f, 1)]
     public float        AutoForwardSpeed;
 
-    [SerializeField, Tooltip("true/‚P“x‚É‘S•¶Í‚ğ•\¦Afalse/‚P•¶š‚¸‚Â•\¦")]
+    [SerializeField, Tooltip("true/ï¼‘åº¦ã«å…¨æ–‡ç« ã‚’è¡¨ç¤ºã€false/ï¼‘æ–‡å­—ãšã¤è¡¨ç¤º")]
     public bool         IsDrawAtOnce;
 
     class TextRuby
@@ -61,10 +61,15 @@ public class RubyText : MonoBehaviour
         }
 
         /// <summary>
-        /// ƒ‹ƒrƒ[ƒh‚Ìİ’èA•\¦”ÍˆÍ‚Ìİ’è
+        /// ãƒ«ãƒ“ãƒ¯ãƒ¼ãƒ‰ã®è¨­å®šã€è¡¨ç¤ºç¯„å›²ã®è¨­å®š
         /// </summary>
         public void Refresh()
         {
+            if (RubyWord == null)
+            {
+                return;
+            }
+
             float textWidth = (characterInfos[posBtm].topRight.x - characterInfos[posTop].topLeft.x);
 
             ruby.SetActive(false);
@@ -76,7 +81,7 @@ public class RubyText : MonoBehaviour
             }
             else
             {
-                // ’ö‚æ‚­ŠÔ‚ğ‹ó‚¯‚é
+                // ç¨‹ã‚ˆãé–“ã‚’ç©ºã‘ã‚‹
                 ruby.alignment = TextAlignmentOptions.BottomFlush;
             }
 
@@ -93,19 +98,22 @@ public class RubyText : MonoBehaviour
         }
 
         /// <summary>
-        /// ƒNƒŠƒA
+        /// ã‚¯ãƒªã‚¢
         /// </summary>
         public void Clear()
         {
             ruby.SetActive(false);
             ruby.SetText("");
+
+            Word = null;
+            RubyWord = null;
         }
 
         /// <summary>
-        /// ƒ¿‚ÌXV
+        /// Î±ã®æ›´æ–°
         /// </summary>
-        /// <param name="messagePosition">Œ»İ‚ÌÅI•¶š•\¦ˆÊ’u</param>
-        /// <param name="a">ÅI•¶š‚Ìƒ¿</param>
+        /// <param name="messagePosition">ç¾åœ¨ã®æœ€çµ‚æ–‡å­—è¡¨ç¤ºä½ç½®</param>
+        /// <param name="a">æœ€çµ‚æ–‡å­—ã®Î±</param>
         public void UpdateAlpha(int messagePosition, float a)
         {
             if (posBtm > messagePosition)
@@ -124,18 +132,18 @@ public class RubyText : MonoBehaviour
         }
 
         /// <summary>
-        /// ƒ¿‚ÌXV
+        /// Î±ã®æ›´æ–°
         /// </summary>
-        /// <param name="a">ÅI•¶š‚Ìƒ¿</param>
+        /// <param name="a">æœ€çµ‚æ–‡å­—ã®Î±</param>
         public void UpdateAlpha(float a)
         {
             ruby.color = new Color(ruby.color.r, ruby.color.g, ruby.color.b, a);
         }
 
         /// <summary>
-        /// ƒ‹ƒrƒtƒHƒ“ƒgƒTƒCƒY‚Ìİ’è
+        /// ãƒ«ãƒ“ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºã®è¨­å®š
         /// </summary>
-        /// <param name="fontSize">–{•¶ƒtƒHƒ“ƒg‚ÌƒTƒCƒY</param>
+        /// <param name="fontSize">æœ¬æ–‡ãƒ•ã‚©ãƒ³ãƒˆã®ã‚µã‚¤ã‚º</param>
         public void SetFontSize(float fontSize)
         {
             ruby.fontSize    = 
@@ -143,11 +151,11 @@ public class RubyText : MonoBehaviour
         }
 
         /// <summary>
-        /// ŒvZÏ‚İ‚Ì•¶šî•ñ‚ğİ’è
+        /// è¨ˆç®—æ¸ˆã¿ã®æ–‡å­—æƒ…å ±ã‚’è¨­å®š
         /// </summary>
-        /// <param name="characterInfos">ŒvZÏ‚İ‚Ì•¶šî•ñ</param>
-        /// <param name="posTop">ƒ‹ƒræ“ª•¶šˆÊ’u</param>
-        /// <param name="posBtm">ƒ‹ƒrI—¹•¶šˆÊ’u</param>
+        /// <param name="characterInfos">è¨ˆç®—æ¸ˆã¿ã®æ–‡å­—æƒ…å ±</param>
+        /// <param name="posTop">ãƒ«ãƒ“å…ˆé ­æ–‡å­—ä½ç½®</param>
+        /// <param name="posBtm">ãƒ«ãƒ“çµ‚äº†æ–‡å­—ä½ç½®</param>
         public void SetTmpInfo(TMP_CharacterInfo[] characterInfos, int posTop, int posBtm)
         {
             this.characterInfos = characterInfos;
@@ -171,7 +179,7 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘O‰ñ’l. Œ»İ’l‚Æ”äŠr‚µAˆá‚¢‚ª‚ ‚Á‚½‚ç‚»‚ê‚¼‚ê‚ğXV
+    /// å‰å›å€¤. ç¾åœ¨å€¤ã¨æ¯”è¼ƒã—ã€é•ã„ãŒã‚ã£ãŸã‚‰ãã‚Œãã‚Œã‚’æ›´æ–°
     /// </summary>
     class UpdateComparer
     {
@@ -232,7 +240,7 @@ public class RubyText : MonoBehaviour
 
         if (update == true)
         {
-            // Ä•`‰æ
+            // å†æç”»
             updateComparer.Position = 0;
             updateComparer.Alpha = 0;
 
@@ -250,16 +258,16 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// •¶š©“®‘—‚è‚Ì‘¬“x‚ğİ’è‚·‚é
+    /// æ–‡å­—è‡ªå‹•é€ã‚Šã®é€Ÿåº¦ã‚’è¨­å®šã™ã‚‹
     /// </summary>
-    /// <param name="_secPerWord">‚•b‚Å‚P•¶š•\¦</param>
+    /// <param name="_secPerWord">ï½ç§’ã§ï¼‘æ–‡å­—è¡¨ç¤º</param>
     public void SetAutoForwardSpeed(float _secPerWord)
     {
         AutoForwardSpeed = _secPerWord;
     }
 
     /// <summary>
-    /// •¶š©“®‘—‚è
+    /// æ–‡å­—è‡ªå‹•é€ã‚Š
     /// </summary>
     public void StartAutoForward()
     {
@@ -271,9 +279,9 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// •¶Í‚Ì•\¦ˆÊ’u‚ğ‹­§‚·‚é
+    /// æ–‡ç« ã®è¡¨ç¤ºä½ç½®ã‚’å¼·åˆ¶ã™ã‚‹
     /// </summary>
-    /// <param name="pos">®”FÅI•\¦•¶šˆÊ’uA­”Fƒ¿</param>
+    /// <param name="pos">æ•´æ•°ï¼šæœ€çµ‚è¡¨ç¤ºæ–‡å­—ä½ç½®ã€å°‘æ•°ï¼šÎ±</param>
     public void ForceTextPosition(float pos)
     {
         this.StopSingleCoroutine(ref co_auto);
@@ -282,18 +290,18 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// •¶Í‚Ì•\¦ˆÊ’u‚ğ‹­§‚·‚é
+    /// æ–‡å­—ã‚’å…¨ã¦è¡¨ç¤ºã™ã‚‹
     /// </summary>
-    /// <param name="pos">®”FÅI•\¦•¶šˆÊ’uA­”Fƒ¿</param>
+    /// <param name="pos">æ•´æ•°ï¼šæœ€çµ‚è¡¨ç¤ºæ–‡å­—ä½ç½®ã€å°‘æ•°ï¼šÎ±</param>
     public void ForceTextDrawAll()
     {
         ForceTextPosition(GetTextLength());
     }
 
     /// <summary>
-    /// •\¦‚·‚é•¶Í‚Ìİ’è. {Š¿š:‚©‚ñ‚¶} ‚Ì‘®‚Åƒ‹ƒr‚ğ•\Œ»‚·‚é
+    /// è¡¨ç¤ºã™ã‚‹æ–‡ç« ã®è¨­å®š. {æ¼¢å­—:ã‹ã‚“ã˜} ã®æ›¸å¼ã§ãƒ«ãƒ“ã‚’è¡¨ç¾ã™ã‚‹
     /// </summary>
-    /// <param name="_message">•\¦‚·‚é•¶Í</param>
+    /// <param name="_message">è¡¨ç¤ºã™ã‚‹æ–‡ç« </param>
     public void SetText(string _message)
     {
         message = _message;
@@ -307,7 +315,7 @@ public class RubyText : MonoBehaviour
         position = 0;
         alpha = 0;
 
-        // <> ` </> ƒRƒ}ƒ“ƒh‚È‚µ
+        // <> ï½ </> ã‚³ãƒãƒ³ãƒ‰ãªã—
         var notagMessage = Regex.Replace(message, "<[^<|>]+>", "");
 
         for ( ; ; )
@@ -320,30 +328,40 @@ public class RubyText : MonoBehaviour
                 break;
             }
 
-            // ƒRƒ}ƒ“ƒh
             string   command = notagMessage.Substring(top, btm-top+1).Replace("{", "").Replace("}", "");
-            string[] coms    = command.Split(':');
 
-            if (textRubyCount+1 > textRubys.Count)
+            try
             {
-                textRubys.Add(new TextRuby(textRubyCount, Ruby, Text));
+                // ã‚³ãƒãƒ³ãƒ‰
+                string[] coms    = command.Split(':');
+
+                if (textRubyCount+1 > textRubys.Count)
+                {
+                    // ãªã‘ã‚Œã°ãƒãƒƒãƒ•ã‚¡æ‹¡å¼µ
+                    textRubys.Add(new TextRuby(textRubyCount, Ruby, Text));
+                }
+
+                var ruby = textRubys[textRubyCount++];
+                ruby.TextPosition = top;
+                ruby.Word         = coms[0];
+                ruby.RubyWord     = coms[1];
+
+                //Debug.Log($"{top} {string.Join(",", coms)}");
+
+                notagMessage      = notagMessage.Remove(top, btm-top+1).Insert(top, coms[0]);
             }
-
-            var ruby = textRubys[textRubyCount++];
-            ruby.TextPosition = top;
-            ruby.Word         = coms[0];
-            ruby.RubyWord     = coms[1];
-
-            //Debug.Log($"{top} {string.Join(",", coms)}");
-
-            notagMessage      = notagMessage.Remove(top, btm-top+1).Insert(top, coms[0]);
+            catch
+            {
+                Debug.LogError($"Unformat RubyWord: {command}");
+                break;
+            }
         }
 
-        // {} ƒRƒ}ƒ“ƒh‚È‚µ‚ÌATextMeshProUGUI ‚É“n‚·ƒeƒLƒXƒg
+        // {} ã‚³ãƒãƒ³ãƒ‰ãªã—ã®ã€TextMeshProUGUI ã«æ¸¡ã™ãƒ†ã‚­ã‚¹ãƒˆ
         message = Regex.Replace(message, ":[^\\}]+\\}", "").Replace("{", "");
 
-        // ‚•¶š–Ú‚ª•¶š—ñ‚”Ô–Ú‚©‚ç•\¦‚³‚ê‚é‚±‚Æ‚ğŠm”F‚·‚éƒŠƒXƒg
-        // iƒ^ƒO‚à‰Á–¡‚·‚é‚½‚ß ‚‚‚j
+        // ï½æ–‡å­—ç›®ãŒæ–‡å­—åˆ—ï½ç•ªç›®ã‹ã‚‰è¡¨ç¤ºã•ã‚Œã‚‹ã“ã¨ã‚’ç¢ºèªã™ã‚‹ãƒªã‚¹ãƒˆ
+        // ï¼ˆã‚¿ã‚°ã‚‚åŠ å‘³ã™ã‚‹ãŸã‚ ï½â‰ ï½ï¼‰
         positionIndexes = new List<int>();
         for (int i = 0; i < message.Length; i++)
         {
@@ -361,7 +379,7 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒeƒLƒXƒg‚Ì•¶š”‚ğæ“¾Bƒ^ƒO‚Íœ‚­
+    /// ãƒ†ã‚­ã‚¹ãƒˆã®æ–‡å­—æ•°ã‚’å–å¾—ã€‚ã‚¿ã‚°ã¯é™¤ã
     /// </summary>
     public int GetTextLength()
     {
@@ -421,7 +439,7 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒtƒHƒ“ƒg‚Ì AutoSize ‚ğİ’è‚·‚é
+    /// ãƒ•ã‚©ãƒ³ãƒˆã® AutoSize ã‚’è¨­å®šã™ã‚‹
     /// </summary>
     public void SetFontAutoSize(float min, float max)
     {
@@ -433,7 +451,7 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒtƒHƒ“ƒgƒTƒCƒY‚ğİ’è‚·‚é
+    /// ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºã‚’è¨­å®šã™ã‚‹
     /// </summary>
     public void SetFontSize(float size)
     {
@@ -443,7 +461,7 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// •¶š©“®‘—‚è
+    /// æ–‡å­—è‡ªå‹•é€ã‚Š
     /// </summary>
     /// <returns></returns>
     IEnumerator autoForward()
@@ -466,7 +484,7 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒeƒLƒXƒg•`‰æ
+    /// ãƒ†ã‚­ã‚¹ãƒˆæç”»
     /// </summary>
     IEnumerator textDrawing(bool calculate)
     {
@@ -476,24 +494,24 @@ public class RubyText : MonoBehaviour
         {
             Text.color = new Color(Text.color.r, Text.color.g, Text.color.b, 0);
 
-            // ˆê’UƒeƒLƒXƒg‚ªŒ©‚¦‚È‚¢ó‘Ô‚Å‘SƒeƒLƒXƒg‚ğ•`‰æ‚·‚éi•¶šî•ñ‚ğæ“¾‚·‚é‚½‚ßj
+            // ä¸€æ—¦ãƒ†ã‚­ã‚¹ãƒˆãŒè¦‹ãˆãªã„çŠ¶æ…‹ã§å…¨ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»ã™ã‚‹ï¼ˆæ–‡å­—æƒ…å ±ã‚’å–å¾—ã™ã‚‹ãŸã‚ï¼‰
             Text.SetText(message);
 
         }
 
-        // ‚PƒtƒŒ[ƒ€Œo‰ß‚µ‚È‚¢‚Æ•¶šî•ñ‚ªXV‚³‚ê‚È‚¢
+        // ï¼‘ãƒ•ãƒ¬ãƒ¼ãƒ çµŒéã—ãªã„ã¨æ–‡å­—æƒ…å ±ãŒæ›´æ–°ã•ã‚Œãªã„
         yield return null;
 
-        // ‘S•¶š‚ª•\¦‚³‚ê‚½ó‘Ô‚ÌƒtƒHƒ“ƒgƒTƒCƒY‚ªƒtƒHƒ“ƒgÅ‘åƒTƒCƒY‚Æ‚·‚é
-        // i‚±‚ê‚ğ‚µ‚Ä‚¨‚©‚È‚¢‚ÆA•¶š‚ª­‚È‚¢ƒoƒJ‚Å‚©‚¢•¶š‚É‚È‚é‚È‚ÇA•sˆÀ’è‚ÈƒeƒLƒXƒg•`‰æ‚É‚È‚éj
+        // å…¨æ–‡å­—ãŒè¡¨ç¤ºã•ã‚ŒãŸçŠ¶æ…‹ã®ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºãŒãƒ•ã‚©ãƒ³ãƒˆæœ€å¤§ã‚µã‚¤ã‚ºã¨ã™ã‚‹
+        // ï¼ˆã“ã‚Œã‚’ã—ã¦ãŠã‹ãªã„ã¨ã€æ–‡å­—ãŒå°‘ãªã„æ™‚ãƒã‚«ã§ã‹ã„æ–‡å­—ã«ãªã‚‹ãªã©ã€ä¸å®‰å®šãªãƒ†ã‚­ã‚¹ãƒˆæç”»ã«ãªã‚‹ï¼‰
         Text.fontSizeMax = Text.fontSize;
 
-        // o‚»‚ë‚Á‚½•¶šî•ñ‚ğŒ³‚Éƒ‹ƒr‚ğİ’è
+        // å‡ºãã‚ã£ãŸæ–‡å­—æƒ…å ±ã‚’å…ƒã«ãƒ«ãƒ“ã‚’è¨­å®š
         refreshRuby();
 
         Text.SetText("");
 
-        // ƒJƒ‰[‚ğ–ß‚·
+        // ã‚«ãƒ©ãƒ¼ã‚’æˆ»ã™
         Text.color = new Color(Text.color.r, Text.color.g, Text.color.b, 1);
 
         while (true)
@@ -501,7 +519,7 @@ public class RubyText : MonoBehaviour
             var msg = Text.text;
 
 //DDisp.Log($"{position} {alpha}");
-            // •¶Í‚ª•Ï‚í‚Á‚½‚èA•\¦ˆÊ’u‚ª•Ï‰»
+            // æ–‡ç« ãŒå¤‰ã‚ã£ãŸã‚Šã€è¡¨ç¤ºä½ç½®ãŒå¤‰åŒ–
             if (updateComparer.Message != message || updateComparer.Position != position)
             {
                 if (position >= 0 && position < positionIndexes.Count)
@@ -534,7 +552,7 @@ public class RubyText : MonoBehaviour
                 updateComparer.Alpha = alpha;
             }
             else
-            // ÅI•¶š‚Ìƒ¿‚ª•Ï‰»
+            // æœ€çµ‚æ–‡å­—ã®Î±ãŒå¤‰åŒ–
             if (updateComparer.Alpha != alpha)
             {
                 if (msg.Length > 1)
@@ -559,7 +577,7 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ‹ƒr‚ÌÄİ’è
+    /// ãƒ«ãƒ“ã®å†è¨­å®š
     /// </summary>
     void refreshRuby()
     {
@@ -568,20 +586,24 @@ public class RubyText : MonoBehaviour
             textRubys[i].SetActive(false);
         }
 
-        // •¶š•`‰æŒã‚Ì•¶šî•ñi•\¦ˆÊ’u‚âƒJƒ‰[‚È‚Çj
+        // æ–‡å­—æç”»å¾Œã®æ–‡å­—æƒ…å ±ï¼ˆè¡¨ç¤ºä½ç½®ã‚„ã‚«ãƒ©ãƒ¼ãªã©ï¼‰
         cinfos = Text.GetTextInfo(Text.text).characterInfo;
 
         for (int i = 0; i < textRubys.Count; i++)
         {
             var ruby    = textRubys[i];
+            if (ruby.Word == null)
+            {
+                continue;
+            }
 
             int posTop  = ruby.TextPosition;
             int posBtm;
 
             var infoTop = cinfos[posTop];
 
-            // ƒ‹ƒr‚ğU‚é•¶š—ñ‚Ì‚¤‚¿A“¯‚¶‚‚³‚ÌI’[•¶š‚ğŒŸõ‚·‚é
-            // i•¶š—ñ‚ª©“®‰üs‚È‚Ç‚Å‚Qs‚É‚Ü‚½‚ª‚Á‚Ä‚µ‚Ü‚¤–â‘è‚Ì‘Îôj
+            // ãƒ«ãƒ“ã‚’æŒ¯ã‚‹æ–‡å­—åˆ—ã®ã†ã¡ã€åŒã˜é«˜ã•ã®çµ‚ç«¯æ–‡å­—ã‚’æ¤œç´¢ã™ã‚‹
+            // ï¼ˆæ–‡å­—åˆ—ãŒè‡ªå‹•æ”¹è¡Œãªã©ã§ï¼’è¡Œã«ã¾ãŸãŒã£ã¦ã—ã¾ã†å•é¡Œã®å¯¾ç­–ï¼‰
             for (posBtm = ruby.TextPosition + ruby.Word.Length - 1; ; posBtm--)
             {
                 var info = cinfos[posBtm];
@@ -601,7 +623,7 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ‹ƒr‚Ì•\¦iƒ¿XVj
+    /// ãƒ«ãƒ“ã®è¡¨ç¤ºï¼ˆÎ±æ›´æ–°ï¼‰
     /// </summary>
     void refreshRubyAlpha(float alpha)
     {
@@ -616,9 +638,9 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// •¶š‚Ì•\¦ˆÊ’uİ’è
+    /// æ–‡å­—ã®è¡¨ç¤ºä½ç½®è¨­å®š
     /// </summary>
-    /// <param name="pos">®”FÅI•\¦•¶šˆÊ’uA­”Fƒ¿</param>
+    /// <param name="pos">æ•´æ•°ï¼šæœ€çµ‚è¡¨ç¤ºæ–‡å­—ä½ç½®ã€å°‘æ•°ï¼šÎ±</param>
     void setTextPosition(float pos)
     {
         int count = GetTextLength();
