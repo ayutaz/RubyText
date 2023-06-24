@@ -7,19 +7,24 @@ using System.Text.RegularExpressions;
 public class RubyText : MonoBehaviour
 {
     [SerializeField]
-    TextMeshProUGUI     Text;
+    TextMeshProUGUI         Text;
 
     [SerializeField]
-    RectTransform       TextRect;
+    RectTransform           TextRect;
 
     [SerializeField]
-    TextMeshProUGUI     Ruby;
+    TextMeshProUGUI         Ruby;
 
     [SerializeField, Tooltip("１文字、または文章全体を表示する時間（秒）"), Range(0.01f, 1)]
-    public float        AutoForwardSpeed;
+    public float            AutoForwardSpeed;
 
     [SerializeField, Tooltip("true/１度に全文章を表示、false/１文字ずつ表示")]
-    public bool         IsDrawAtOnce;
+    public bool             IsDrawAtOnce;
+
+    /// <summary>
+    /// テキスト表示終了
+    /// </summary>
+    public System.Action    TextDrawFinished;
 
     class TextRuby
     {
@@ -315,6 +320,11 @@ public class RubyText : MonoBehaviour
         position = 0;
         alpha = 0;
 
+        if (string.IsNullOrEmpty(_message) == true)
+        {
+            return;
+        }
+
         // <> ～ </> コマンドなし
         var notagMessage = Regex.Replace(message, "<[^<|>]+>", "");
 
@@ -384,6 +394,14 @@ public class RubyText : MonoBehaviour
     public int GetTextLength()
     {
         return positionIndexes == null ? 0 : positionIndexes.Count;
+    }
+
+    /// <summary>
+    /// テキスト描画中は true、それ以外は false
+    /// </summary>
+    public bool CheckTextDrawing()
+    {
+        return co_text != null;
     }
 
     /// <summary>
@@ -572,8 +590,17 @@ public class RubyText : MonoBehaviour
                 Text.SetText(msg);
             }
 
+            if (alpha == 1 && this.position == GetTextLength()-1)
+            {
+                break;
+            }
+
             yield return null;
         }
+
+        co_text = null;
+
+        TextDrawFinished?.Invoke();
     }
 
     /// <summary>
