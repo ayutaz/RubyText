@@ -22,7 +22,7 @@ public class RubyText : MonoBehaviour
     public bool             IsDrawAtOnce;
 
     /// <summary>
-    /// テキスト表示終了
+    /// テキスト描画終了
     /// </summary>
     public System.Action    TextDrawFinished;
 
