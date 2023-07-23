@@ -15,7 +15,7 @@ public class RubyText : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI         Ruby;
 
-    [SerializeField, Tooltip("１文字、または文章全体を表示する時間（秒）"), Range(0.01f, 1)]
+    [SerializeField, Tooltip("１文字、または文章全体を表示する時間（秒）. ０の場合一度に表示"), Range(0, 1)]
     public float            AutoForwardSpeed;
 
     [SerializeField, Tooltip("true/１度に全文章を表示、false/１文字ずつ表示")]
@@ -193,6 +193,22 @@ public class RubyText : MonoBehaviour
         public float  Alpha;
         public float  W, H;
         public bool   EnableWordWrapping;
+
+        public UpdateComparer(TextMeshProUGUI text)
+        {
+            Clear(text);
+        }
+
+        public void Clear(TextMeshProUGUI text)
+        {
+            Message  = null;
+            Position = 0;
+            Alpha    = 0;
+            W        = 0;
+            H        = 0;
+            EnableWordWrapping = text.enableWordWrapping == true;
+//            EnableWordWrapping = text.textWrappingMode != TextWrappingModes.NoWrap;
+        }
     }
 
     List<TextRuby>              textRubys;
@@ -218,8 +234,7 @@ public class RubyText : MonoBehaviour
         Ruby.SetActive(false);
 
         textRubys = new List<TextRuby>();
-        updateComparer = new UpdateComparer();
-        updateComparer.EnableWordWrapping = Text.enableWordWrapping;
+        updateComparer = new UpdateComparer(Text);
 
         fontSizeMax = Text.fontSizeMax;
     }
@@ -237,9 +252,13 @@ public class RubyText : MonoBehaviour
             updateComparer.H = TextRect.GetHeight();
             update = true;
         }
-        if (updateComparer.EnableWordWrapping != Text.enableWordWrapping)
+
+        bool wrapping = Text.enableWordWrapping == true;
+//        bool wrapping = Text.textWrappingMode != TextWrappingModes.NoWrap;
+
+        if (updateComparer.EnableWordWrapping != wrapping)
         {
-            updateComparer.EnableWordWrapping = Text.enableWordWrapping;
+            updateComparer.EnableWordWrapping = wrapping;
             update = true;
         }
 
@@ -262,6 +281,11 @@ public class RubyText : MonoBehaviour
         this.StopSingleCoroutine(ref co_text);
     }
 
+    private void OnDisable()
+    {
+        Debug.Log($"Disable {message}");
+    }
+
     /// <summary>
     /// 文字自動送りの速度を設定する
     /// </summary>
@@ -276,10 +300,11 @@ public class RubyText : MonoBehaviour
     /// </summary>
     public void StartAutoForward()
     {
-        if (AutoForwardSpeed == 0)
+        if (positionIndexes == null)
         {
-            AutoForwardSpeed = 0.05f;
+            return;
         }
+
         this.StartSingleCoroutine(ref co_auto, autoForward());
     }
 
@@ -304,11 +329,24 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
+    /// テキストをクリア
+    /// </summary>
+    public void ResetText()
+    {
+        SetText(null);
+    }
+
+    /// <summary>
     /// 表示する文章の設定. {漢字:かんじ} の書式でルビを表現する
     /// </summary>
     /// <param name="_message">表示する文章</param>
     public void SetText(string _message)
     {
+        if (_message == null)
+        {
+            _message = "";
+        }
+
         message = _message;
 
         Text.SetText("");
@@ -319,6 +357,9 @@ public class RubyText : MonoBehaviour
 
         position = 0;
         alpha = 0;
+        positionIndexes = null;
+
+        updateComparer.Clear(Text);
 
         if (string.IsNullOrEmpty(_message) == true)
         {
@@ -479,6 +520,46 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
+    /// カラーを設定する
+    /// </summary>
+    public void SetColor(Color color)
+    {
+        Text.color = color;
+    }
+
+    /// <summary>
+    /// 文字寄せのタイプを設定
+    /// </summary>
+    public void SetAlignment(TextAlignmentOptions alignment)
+    {
+        Text.alignment = alignment;
+    }
+
+    /// <summary>
+    /// 文字間を設定
+    /// </summary>
+    public void SetCharacterSpacing(float spacing)
+    {
+        Text.characterSpacing = spacing;
+    }
+
+    /// <summary>
+    /// 行間を設定
+    /// </summary>
+    public void SetLineSpacing(float spacing)
+    {
+        Text.lineSpacing = spacing;
+    }
+
+    /// <summary>
+    /// TextMeshProUGUI を返す
+    /// </summary>
+    public TextMeshProUGUI GetUIText()
+    {
+        return Text;
+    }
+
+    /// <summary>
     /// 文字自動送り
     /// </summary>
     /// <returns></returns>
@@ -486,6 +567,12 @@ public class RubyText : MonoBehaviour
     {
         int   max = positionIndexes.Count;
         float time = 0;
+
+        if (AutoForwardSpeed == 0)
+        {
+            setTextPosition(max);
+            yield break;
+        }
 
         yield return null;
 
@@ -540,7 +627,7 @@ public class RubyText : MonoBehaviour
             // 文章が変わったり、表示位置が変化
             if (updateComparer.Message != message || updateComparer.Position != position)
             {
-                if (position >= 0 && position < positionIndexes.Count)
+                if (positionIndexes != null && position >= 0 && position < positionIndexes.Count)
                 {
                     int    ia   = (int)(255 * alpha);
                     string taga = $"<alpha=#{ia.ToString("x2")}>";
