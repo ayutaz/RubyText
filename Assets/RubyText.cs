@@ -281,11 +281,6 @@ public class RubyText : MonoBehaviour
         this.StopSingleCoroutine(ref co_text);
     }
 
-    private void OnDisable()
-    {
-        Debug.Log($"Disable {message}");
-    }
-
     /// <summary>
     /// 文字自動送りの速度を設定する
     /// </summary>
