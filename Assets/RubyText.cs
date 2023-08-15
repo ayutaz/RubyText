@@ -209,7 +209,7 @@ public class RubyText : MonoBehaviour
             W        = 0;
             H        = 0;
 #if TextMeshPro_Ver3_2_OR_LATER
-            EnableWordWrapping = text.textWrappingMode != TextWrappingModes.NoWrap
+            EnableWordWrapping = text.textWrappingMode != TextWrappingModes.NoWrap;
 #else
             EnableWordWrapping = text.enableWordWrapping == true;
 #endif
