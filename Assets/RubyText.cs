@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//#define TextMeshPro_Ver3_2_OR_LATER
+
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -206,8 +208,11 @@ public class RubyText : MonoBehaviour
             Alpha    = 0;
             W        = 0;
             H        = 0;
+#if TextMeshPro_Ver3_2_OR_LATER
+            EnableWordWrapping = text.textWrappingMode != TextWrappingModes.NoWrap
+#else
             EnableWordWrapping = text.enableWordWrapping == true;
-//            EnableWordWrapping = text.textWrappingMode != TextWrappingModes.NoWrap;
+#endif
         }
     }
 
@@ -253,8 +258,11 @@ public class RubyText : MonoBehaviour
             update = true;
         }
 
+#if TextMeshPro_Ver3_2_OR_LATER
+        bool wrapping = Text.textWrappingMode != TextWrappingModes.NoWrap;
+#else
         bool wrapping = Text.enableWordWrapping == true;
-//        bool wrapping = Text.textWrappingMode != TextWrappingModes.NoWrap;
+#endif
 
         if (updateComparer.EnableWordWrapping != wrapping)
         {
@@ -317,7 +325,6 @@ public class RubyText : MonoBehaviour
     /// <summary>
     /// 文字を全て表示する
     /// </summary>
-    /// <param name="pos">整数：最終表示文字位置、少数：α</param>
     public void ForceTextDrawAll()
     {
         ForceTextPosition(GetTextLength());
@@ -457,6 +464,11 @@ public class RubyText : MonoBehaviour
         TextRect.SetX(x);
     }
 
+    public float GetX()
+    {
+        return TextRect.GetX();
+    }
+    
     /// <summary>
     /// RectY
     /// </summary>
@@ -465,6 +477,11 @@ public class RubyText : MonoBehaviour
         TextRect.SetY(y);
     }
 
+    public float GetY()
+    {
+        return TextRect.GetY();
+    }
+    
     /// <summary>
     /// RectWH
     /// </summary>
@@ -483,6 +500,11 @@ public class RubyText : MonoBehaviour
         updateComparer.W = width;
     }
 
+    public float GetWidth()
+    {
+        return TextRect.GetWidth();
+    }
+    
     /// <summary>
     /// RectH
     /// </summary>
@@ -492,6 +514,11 @@ public class RubyText : MonoBehaviour
         updateComparer.H = height;
     }
 
+    public float GetHeight()
+    {
+        return TextRect.GetHeight();
+    }
+    
     /// <summary>
     /// フォントの AutoSize を設定する
     /// </summary>
@@ -504,6 +531,14 @@ public class RubyText : MonoBehaviour
         fontSizeMax      = max;
     }
 
+    /// <summary>
+    /// フォントの AutoSize 機能をリセットする
+    /// </summary>
+    public void ResetFontAutoSize()
+    {
+        Text.enableAutoSizing = false;
+    }
+    
     /// <summary>
     /// フォントサイズを設定する
     /// </summary>
