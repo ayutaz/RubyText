@@ -38,7 +38,7 @@ public class Sample : MonoBehaviour
         Position.onValueChanged.AddListener(
             (val) =>
             {
-                RubyText.ForceTextPosition(RubyText.GetTextLength() * val);
+                RubyText.ForceTextPosition((int)((float)RubyText.GetTextLength() * val));
             }
         );
 

@@ -657,8 +657,15 @@ public class RubyText : MonoBehaviour
             {
                 if (msg.Length > 1)
                 {
-                    int ia = (int)(255 * alpha);
-                    msg = Regex.Replace(msg, $"<alpha=[^>]+>", $"<alpha=#{ia.ToString("x2")}>");
+                    if (alpha == 1 && this.position == GetTextLength()-1)
+                    {
+                        msg = Regex.Replace(msg, $"<alpha=[^>]+>", $"");
+                    }
+                    else
+                    {
+                        int ia = (int)(255 * alpha);
+                        msg = Regex.Replace(msg, $"<alpha=[^>]+>", $"<alpha=#{ia.ToString("x2")}>");
+                    }
 
                     refreshRubyAlpha(alpha);
                 }
