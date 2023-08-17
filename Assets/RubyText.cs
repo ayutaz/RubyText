@@ -230,6 +230,7 @@ public class RubyText : MonoBehaviour
 
     Coroutine                   co_text;
     Coroutine                   co_auto;
+    IEnumerator                 ienum_text;
 
     /// <summary>
     /// awake
@@ -277,6 +278,22 @@ public class RubyText : MonoBehaviour
             updateComparer.Alpha = 0;
 
             this.StartSingleCoroutine(ref co_text, textDrawing(false));
+        }
+    }
+
+    void OnEnable()
+    {
+        if (ienum_text != null)
+        {
+            StartCoroutine(ienum_text);
+        }
+    }
+
+    void OnDisable()
+    {
+        if (ienum_text != null)
+        {
+            StopCoroutine(ienum_text);
         }
     }
 
@@ -426,7 +443,8 @@ public class RubyText : MonoBehaviour
             positionIndexes.Add(i);
         }
 
-        this.StartSingleCoroutine(ref co_text, textDrawing(true));
+        ienum_text = textDrawing(true);
+        this.StartSingleCoroutine(ref co_text, ienum_text);
 
 //Debug.Log($"{positionIndexes.Count} {message}");
     }
@@ -722,7 +740,8 @@ public class RubyText : MonoBehaviour
             yield return null;
         }
 
-        co_text = null;
+        co_text    = null;
+        ienum_text = null;
 
         TextDrawFinished?.Invoke();
     }
