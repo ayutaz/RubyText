@@ -228,15 +228,17 @@ public class RubyText : MonoBehaviour
     int                         position;
     float                       alpha;
 
-    Coroutine                   co_text;
-    Coroutine                   co_auto;
-    IEnumerator                 ienum_text;
+    CoroutineInfo               coText;
+    CoroutineInfo               coAuto;
 
     /// <summary>
     /// awake
     /// </summary>
     void Awake()
     {
+        coText = new CoroutineInfo();
+        coAuto = new CoroutineInfo();
+
         Ruby.SetActive(false);
 
         textRubys = new List<TextRuby>();
@@ -277,24 +279,13 @@ public class RubyText : MonoBehaviour
             updateComparer.Position = 0;
             updateComparer.Alpha = 0;
 
-            this.StartSingleCoroutine(ref co_text, textDrawing(false));
+            this.StartSingleCoroutine(ref coText, textDrawing(false));
         }
     }
 
     void OnEnable()
     {
-        if (ienum_text != null)
-        {
-            StartCoroutine(ienum_text);
-        }
-    }
-
-    void OnDisable()
-    {
-        if (ienum_text != null)
-        {
-            StopCoroutine(ienum_text);
-        }
+        this.ResumeSingleCoroutine(coText);
     }
 
     /// <summary>
@@ -302,8 +293,8 @@ public class RubyText : MonoBehaviour
     /// </summary>
     void OnDestroy()
     {
-        this.StopSingleCoroutine(ref co_auto);
-        this.StopSingleCoroutine(ref co_text);
+        this.StopSingleCoroutine(ref coAuto);
+        this.StopSingleCoroutine(ref coText);
     }
 
     /// <summary>
@@ -325,7 +316,7 @@ public class RubyText : MonoBehaviour
             return;
         }
 
-        this.StartSingleCoroutine(ref co_auto, autoForward());
+        this.StartSingleCoroutine(ref coAuto, autoForward());
     }
 
     /// <summary>
@@ -334,7 +325,7 @@ public class RubyText : MonoBehaviour
     /// <param name="pos">整数：最終表示文字位置、少数：α</param>
     public void ForceTextPosition(float pos)
     {
-        this.StopSingleCoroutine(ref co_auto);
+        this.StopSingleCoroutine(ref coAuto);
 
         setTextPosition(pos);
     }
@@ -443,8 +434,7 @@ public class RubyText : MonoBehaviour
             positionIndexes.Add(i);
         }
 
-        ienum_text = textDrawing(true);
-        this.StartSingleCoroutine(ref co_text, ienum_text);
+        this.StartSingleCoroutine(ref coText, textDrawing(true));
 
 //Debug.Log($"{positionIndexes.Count} {message}");
     }
@@ -462,7 +452,7 @@ public class RubyText : MonoBehaviour
     /// </summary>
     public bool CheckTextDrawing()
     {
-        return co_text != null;
+        return coText.Coroutine != null;
     }
 
     /// <summary>
@@ -633,7 +623,7 @@ public class RubyText : MonoBehaviour
             yield return null;
         }
 
-        co_auto = null;
+        coAuto.Clear();
     }
 
     /// <summary>
@@ -740,8 +730,7 @@ public class RubyText : MonoBehaviour
             yield return null;
         }
 
-        co_text    = null;
-        ienum_text = null;
+        coText.Clear();
 
         TextDrawFinished?.Invoke();
     }

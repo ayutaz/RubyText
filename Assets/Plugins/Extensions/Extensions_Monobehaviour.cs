@@ -1,14 +1,26 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
+
+public class CoroutineInfo
+{
+    public Coroutine    Coroutine;
+    public IEnumerator  Routine;
+
+    public void Clear()
+    {
+        Coroutine = null;
+        Routine   = null;
+    }
+}
 
 public static class MonoBehaviourExtension
 {
     /// <summary>
-    /// ƒVƒ“ƒOƒ‹ƒgƒ“‚ÌƒRƒ‹[ƒ`ƒ“‚ğŠJn‚µ‚Ü‚·BˆÈ‘O‚ÌƒRƒ‹[ƒ`ƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚Í’â~‚µAˆ—‚ªd•¡‚µ‚È‚¢‚æ‚¤‚É‚µ‚Ü‚·B
+    /// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’é–‹å§‹ã—ã¾ã™ã€‚ä»¥å‰ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¯åœæ­¢ã—ã€å‡¦ç†ãŒé‡è¤‡ã—ãªã„ã‚ˆã†ã«ã—ã¾ã™ã€‚
     /// </summary>
     /// <param name="self">MonoBehaviour</param>
-    /// <param name="co_routine">ˆÈ‘O‚ÌƒRƒ‹[ƒ`ƒ“ƒCƒ“ƒXƒ^ƒ“ƒX</param>
-    /// <param name="routine">ƒRƒ‹[ƒ`ƒ“</param>
+    /// <param name="co_routine">ä»¥å‰ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹</param>
+    /// <param name="routine">ã‚³ãƒ«ãƒ¼ãƒãƒ³</param>
     public static void StartSingleCoroutine(this MonoBehaviour self, ref Coroutine co_routine, IEnumerator routine)
     {
         if (co_routine != null)
@@ -19,7 +31,7 @@ public static class MonoBehaviourExtension
     }
 
     /// <summary>
-    /// ƒVƒ“ƒOƒ‹ƒgƒ“‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~‚µ‚Ü‚·B’â~‚µ‚½ƒRƒ‹[ƒ`ƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚Í null ‚É‚µ‚Ü‚·B
+    /// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢ã—ã¾ã™ã€‚åœæ­¢ã—ãŸã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¯ null ã«ã—ã¾ã™ã€‚
     /// </summary>
     /// <param name="self"></param>
     /// <param name="co_routine"></param>
@@ -29,6 +41,59 @@ public static class MonoBehaviourExtension
         {
             self.StopCoroutine(co_routine);
             co_routine = null;
+        }
+    }
+
+    /// <summary>
+    /// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’é–‹å§‹ã—ã¾ã™ã€‚ä»¥å‰ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¯åœæ­¢ã—ã€å‡¦ç†ãŒé‡è¤‡ã—ãªã„ã‚ˆã†ã«ã—ã¾ã™ã€‚
+    /// </summary>
+    /// <param name="self">MonoBehaviour</param>
+    /// <param name="co_routine">ä»¥å‰ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹</param>
+    /// <param name="routine">ã‚³ãƒ«ãƒ¼ãƒãƒ³</param>
+    public static void StartSingleCoroutine(this MonoBehaviour self, ref CoroutineInfo coInfo, IEnumerator routine)
+    {
+        if (coInfo.Coroutine != null)
+        {
+            self.StopCoroutine(coInfo.Coroutine);
+        }
+
+        coInfo.Routine   = routine;
+        coInfo.Coroutine = self.StartCoroutine(routine);
+    }
+
+    /// <summary>
+    /// ã‚³ãƒ«ãƒ¼ãƒãƒ³ã®åœæ­¢
+    /// </summary>
+    public static void StopSingleCoroutine(this MonoBehaviour self, ref CoroutineInfo coInfo)
+    {
+        if (coInfo.Coroutine != null)
+        {
+            self.StopCoroutine(coInfo.Coroutine);
+
+            coInfo.Routine   = null;
+            coInfo.Coroutine = null;
+        }
+    }
+
+    /// <summary>
+    /// ã‚³ãƒ«ãƒ¼ãƒãƒ³ã®ä¸€æ™‚åœæ­¢
+    /// </summary>
+    public static void PauseSingleCoroutine(this MonoBehaviour self, CoroutineInfo coInfo)
+    {
+        if (coInfo.Routine != null)
+        {
+            self.StopCoroutine(coInfo.Routine);
+        }
+    }
+
+    /// <summary>
+    /// ã‚³ãƒ«ãƒ¼ãƒãƒ³ã®å†é–‹
+    /// </summary>
+    public static void ResumeSingleCoroutine(this MonoBehaviour self, CoroutineInfo coInfo)
+    {
+        if (coInfo.Routine != null)
+        {
+            self.StartCoroutine(coInfo.Routine);
         }
     }
 }
