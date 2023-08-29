@@ -3,12 +3,15 @@ using UnityEngine;
 
 public class CoroutineInfo
 {
-    public Coroutine    Coroutine;
     public IEnumerator  Routine;
+
+    public bool CoroutineExists()
+    {
+        return Routine != null;
+    }
 
     public void Clear()
     {
-        Coroutine = null;
         Routine   = null;
     }
 }
@@ -52,13 +55,13 @@ public static class MonoBehaviourExtension
     /// <param name="routine">コルーチン</param>
     public static void StartSingleCoroutine(this MonoBehaviour self, ref CoroutineInfo coInfo, IEnumerator routine)
     {
-        if (coInfo.Coroutine != null)
+        if (coInfo.Routine != null)
         {
-            self.StopCoroutine(coInfo.Coroutine);
+            self.StopCoroutine(coInfo.Routine);
         }
 
         coInfo.Routine   = routine;
-        coInfo.Coroutine = self.StartCoroutine(routine);
+        self.StartCoroutine(routine);
     }
 
     /// <summary>
@@ -66,12 +69,10 @@ public static class MonoBehaviourExtension
     /// </summary>
     public static void StopSingleCoroutine(this MonoBehaviour self, ref CoroutineInfo coInfo)
     {
-        if (coInfo.Coroutine != null)
+        if (coInfo.Routine != null)
         {
-            self.StopCoroutine(coInfo.Coroutine);
-
+            self.StopCoroutine(coInfo.Routine);
             coInfo.Routine   = null;
-            coInfo.Coroutine = null;
         }
     }
 

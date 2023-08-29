@@ -154,7 +154,7 @@ public class RubyText : MonoBehaviour
         public void SetFontSize(float fontSize)
         {
             ruby.fontSize    = 
-            ruby.fontSizeMax = fontSize/2;
+            ruby.fontSizeMax = fontSize * 0.45f;
         }
 
         /// <summary>
@@ -163,7 +163,8 @@ public class RubyText : MonoBehaviour
         /// <param name="characterInfos">計算済みの文字情報</param>
         /// <param name="posTop">ルビ先頭文字位置</param>
         /// <param name="posBtm">ルビ終了文字位置</param>
-        public void SetTmpInfo(TMP_CharacterInfo[] characterInfos, int posTop, int posBtm)
+        /// <param name="rubyPositionAdjust">ルビの高さ補正値</param>
+        public void SetTmpInfo(TMP_CharacterInfo[] characterInfos, int posTop, int posBtm, float rubyPositionAdjust)
         {
             this.characterInfos = characterInfos;
             this.posTop         = posTop;
@@ -172,7 +173,7 @@ public class RubyText : MonoBehaviour
             var top = this.characterInfos[this.posTop];
             var btm = this.characterInfos[posBtm];
 
-            float y = top.ascender;
+            float y = top.ascender + rubyPositionAdjust;
             float x = (top.topLeft.x + btm.topRight.x) / 2;
 
             rubyRect.SetXY(x, y);
@@ -216,6 +217,9 @@ public class RubyText : MonoBehaviour
         }
     }
 
+    static Dictionary<TMP_FontAsset, float>
+                                rubyAdjustByFont;
+
     List<TextRuby>              textRubys;
     int                         textRubyCount;
     UpdateComparer              updateComparer;
@@ -227,6 +231,7 @@ public class RubyText : MonoBehaviour
 
     int                         position;
     float                       alpha;
+    int                         crlfCount;
 
     CoroutineInfo               coText;
     CoroutineInfo               coAuto;
@@ -295,6 +300,29 @@ public class RubyText : MonoBehaviour
     {
         this.StopSingleCoroutine(ref coAuto);
         this.StopSingleCoroutine(ref coText);
+    }
+
+    /// <summary>
+    /// 初期化
+    /// </summary>
+    public static void Initialize()
+    {
+        rubyAdjustByFont = new Dictionary<TMP_FontAsset, float>();
+    }
+
+    /// <summary>
+    /// 指定されたフォントに対応したルビ補正位置（縦）を設定する
+    /// </summary>
+    public static void SetRubyPositionAdjust(TMP_FontAsset font, float rubyPositionAdjust)
+    {
+        if (rubyAdjustByFont.ContainsKey(font) == true)
+        {
+            rubyAdjustByFont[font] = rubyPositionAdjust;
+        }
+        else
+        {
+            rubyAdjustByFont.Add(font, rubyPositionAdjust);
+        }
     }
 
     /// <summary>
@@ -369,6 +397,9 @@ public class RubyText : MonoBehaviour
         alpha = 0;
         positionIndexes = null;
 
+        var matches = Regex.Matches(_message, "\n");
+        crlfCount = matches.Count;
+
         updateComparer.Clear(Text);
 
         if (string.IsNullOrEmpty(_message) == true)
@@ -436,6 +467,13 @@ public class RubyText : MonoBehaviour
 
         this.StartSingleCoroutine(ref coText, textDrawing(true));
 
+        if (IsDrawAtOnce == true)
+        {
+            StartAutoForward();
+        }
+        //ienum_text = textDrawing(true);
+        //this.StartSingleCoroutine(ref co_text, ienum_text);
+
 //Debug.Log($"{positionIndexes.Count} {message}");
     }
 
@@ -452,7 +490,7 @@ public class RubyText : MonoBehaviour
     /// </summary>
     public bool CheckTextDrawing()
     {
-        return coText.Coroutine != null;
+        return coText.CoroutineExists() == true;
     }
 
     /// <summary>
@@ -526,7 +564,16 @@ public class RubyText : MonoBehaviour
     {
         return TextRect.GetHeight();
     }
-    
+
+    /// <summary>
+    /// フォント設定
+    /// </summary>
+    /// <param name="font"></param>
+    public void SetFont(TMP_FontAsset font)
+    {
+        Text.font = font;
+    }
+
     /// <summary>
     /// フォントの AutoSize を設定する
     /// </summary>
@@ -631,8 +678,6 @@ public class RubyText : MonoBehaviour
     /// </summary>
     IEnumerator textDrawing(bool calculate)
     {
-        textRubys.ForEach( ruby => ruby.Clear() );
-
         if (calculate == true)
         {
             Text.color = new Color(Text.color.r, Text.color.g, Text.color.b, 0);
@@ -687,7 +732,20 @@ public class RubyText : MonoBehaviour
 
                             refreshRubyAlpha(alpha);
                         }
+
+                        // 行が増えるごとにテキストの表示位置（縦）が変わってしまうのを防ぐ
+                        var matches = Regex.Matches(msg, "\n");
+                        for (int i = 0; i < crlfCount - matches.Count; i++)
+                        {
+                            msg += "\n";
+                        }
+
+                        if (msg[msg.Length-1] == '\n')
+                        {
+                            msg += "　";
+                        }
                     }
+//ebug.Log($"1: {position} {alpha} {msg}");
                 }
 
                 updateComparer.Message = message;
@@ -695,7 +753,7 @@ public class RubyText : MonoBehaviour
                 updateComparer.Alpha = alpha;
             }
             else
-            // 最終文字のαが変化
+            // αだけ変化
             if (updateComparer.Alpha != alpha)
             {
                 if (msg.Length > 1)
@@ -714,6 +772,7 @@ public class RubyText : MonoBehaviour
                 }
 
                 updateComparer.Alpha = alpha;
+//Debug.Log($"2: {position} {alpha} {msg}");
             }
 
             if (Text.text != msg)
@@ -772,7 +831,13 @@ public class RubyText : MonoBehaviour
                 }
             }
 
-            ruby.SetTmpInfo(cinfos, posTop, posBtm);
+            float adjust = 0;
+            if (rubyAdjustByFont != null && rubyAdjustByFont.ContainsKey(Text.font) == true)
+            {
+                adjust = rubyAdjustByFont[Text.font];
+            }
+
+            ruby.SetTmpInfo(cinfos, posTop, posBtm, adjust);
             ruby.SetFontSize(Text.fontSize);
             ruby.Refresh();
             ruby.SetActive(true);
