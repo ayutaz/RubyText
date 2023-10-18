@@ -244,6 +244,8 @@ public class RubyText : MonoBehaviour
         coText = new CoroutineInfo();
         coAuto = new CoroutineInfo();
 
+        Ruby.font = Text.font;
+        Ruby.fontMaterial = Text.fontMaterial;
         Ruby.SetActive(false);
 
         textRubys = new List<TextRuby>();
@@ -290,6 +292,7 @@ public class RubyText : MonoBehaviour
 
     void OnEnable()
     {
+        this.ResumeSingleCoroutine(coAuto);
         this.ResumeSingleCoroutine(coText);
     }
 
@@ -568,10 +571,12 @@ public class RubyText : MonoBehaviour
     /// <summary>
     /// フォント設定
     /// </summary>
-    /// <param name="font"></param>
-    public void SetFont(TMP_FontAsset font)
+    public void SetFont(TMP_FontAsset font, Material fontMaterial)
     {
         Text.font = font;
+        Text.fontMaterial = fontMaterial;
+        Ruby.font = font;
+        Ruby.fontMaterial = fontMaterial;
     }
 
     /// <summary>
@@ -634,6 +639,24 @@ public class RubyText : MonoBehaviour
     public void SetLineSpacing(float spacing)
     {
         Text.lineSpacing = spacing;
+    }
+
+#if TextMeshPro_Ver3_2_OR_LATER
+    /// <summary>
+    /// 禁則モードを設定
+    /// </summary>
+    public void SetTextWrappingMode(TextWrappingModes mode)
+    {
+        Text.textWrappingMode = mode;
+    }
+#endif
+
+    /// <summary>
+    /// レイキャストの On / Off
+    /// </summary>
+    public void SetRaycastTarget(bool targetOn)
+    {
+        Text.raycastTarget = targetOn;
     }
 
     /// <summary>
@@ -777,7 +800,6 @@ public class RubyText : MonoBehaviour
 
             if (Text.text != msg)
             {
-//Debug.Log($"{msg}");
                 Text.SetText(msg);
             }
 
@@ -788,6 +810,8 @@ public class RubyText : MonoBehaviour
 
             yield return null;
         }
+
+        yield return null;
 
         coText.Clear();
 
