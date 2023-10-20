@@ -1,4 +1,4 @@
-﻿//#define TextMeshPro_Ver3_2_OR_LATER
+﻿#define TextMeshPro_Ver3_2_OR_LATER
 
 using System.Collections;
 using System.Collections.Generic;
@@ -306,18 +306,15 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
-    /// 初期化
-    /// </summary>
-    public static void Initialize()
-    {
-        rubyAdjustByFont = new Dictionary<TMP_FontAsset, float>();
-    }
-
-    /// <summary>
     /// 指定されたフォントに対応したルビ補正位置（縦）を設定する
     /// </summary>
     public static void SetRubyPositionAdjust(TMP_FontAsset font, float rubyPositionAdjust)
     {
+        if (rubyAdjustByFont == null)
+        {
+            rubyAdjustByFont = new Dictionary<TMP_FontAsset, float>();
+        }
+
         if (rubyAdjustByFont.ContainsKey(font) == true)
         {
             rubyAdjustByFont[font] = rubyPositionAdjust;
