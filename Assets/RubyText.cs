@@ -494,6 +494,33 @@ public class RubyText : MonoBehaviour
     }
 
     /// <summary>
+    /// 話者の発言文字列描画中は true、それ以外は false
+    /// </summary>
+    public bool CheckTalking()
+    {
+        if (coText.CoroutineExists() == true)
+        {
+            switch (Text.text[Text.text.Length-1])
+            {
+                case '…':
+                case '、':
+                case '。':
+                case '！':
+                case '？':
+                case '!':
+                case '?':
+                case ',':
+                case '.':
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// RectXY
     /// </summary>
     public void SetXY(float x, float y)
