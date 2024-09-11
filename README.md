@@ -7,5 +7,5 @@
 2. Draw ボタンを押して確認します。
 3. AutoForwardSpeed や IsDrawAtOnce を変更し、再度 Draw ボタンを押して確認します。
 
-blog（解説記事）: https://www.create-forever.games/unity-textmeshpro-rubytext/
+blog（解説記事）: https://www.create-forever.games/unity-textmeshpro-rubytext/ 
 license : MIT（詳細はコードのコメントを参照）
