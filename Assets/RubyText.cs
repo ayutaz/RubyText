@@ -267,7 +267,7 @@ public class RubyText : MonoBehaviour
         }
     }
 
-    static Dictionary<TMP_FontAsset, float>
+    static Dictionary<string, float>
                                 rubyAdjustByFont;
 
     List<TextRuby>              textRubys;
@@ -368,16 +368,16 @@ public class RubyText : MonoBehaviour
     {
         if (rubyAdjustByFont == null)
         {
-            rubyAdjustByFont = new Dictionary<TMP_FontAsset, float>();
+            rubyAdjustByFont = new Dictionary<string, float>();
         }
 
-        if (rubyAdjustByFont.ContainsKey(font) == true)
+        if (rubyAdjustByFont.ContainsKey(font.name) == true)
         {
-            rubyAdjustByFont[font] = rubyPositionAdjust;
+            rubyAdjustByFont[font.name] = rubyPositionAdjust;
         }
         else
         {
-            rubyAdjustByFont.Add(font, rubyPositionAdjust);
+            rubyAdjustByFont.Add(font.name, rubyPositionAdjust);
         }
     }
 
@@ -1006,6 +1006,9 @@ public class RubyText : MonoBehaviour
         // 文字描画後の文字情報（表示位置やカラーなど）
         cinfos = Text.GetTextInfo(Text.text).characterInfo;
 
+        int posTop = 0;
+        int posBtm = 0;
+
         for (int i = 0; i < textRubys.Count; i++)
         {
             var ruby    = textRubys[i];
@@ -1014,30 +1017,56 @@ public class RubyText : MonoBehaviour
                 continue;
             }
 
-            int posTop  = ruby.TextPosition;
-            int posBtm;
+            float adjust = 0;
+            if (rubyAdjustByFont != null && rubyAdjustByFont.ContainsKey(Text.font.name) == true)
+            {
+                adjust = rubyAdjustByFont[Text.font.name];
+            }
 
-            var infoTop = cinfos[posTop];
+            int no = 0;
+
+            for (int j = posBtm; j < cinfos.Length; j++)
+            {
+                if (cinfos[j].character == ruby.Word[no])
+                {
+                    if (no == 0)
+                    {
+                        posTop = j;
+                    }
+                    if (++no >= ruby.Word.Length)
+                    {
+                        posBtm = j;
+                        break;
+                    }
+                }
+                else
+                {
+                    no = 0;
+                }
+            }
 
             // ルビを振る文字列のうち、同じ高さの終端文字を検索する
             // （文字列が自動改行などで２行にまたがってしまう問題の対策）
-            for (posBtm = ruby.TextPosition + ruby.Word.Length - 1; ; posBtm--)
+            for (int j = posTop; j <= posBtm; j++)
             {
-                var info = cinfos[posBtm];
-                if (infoTop.ascender == info.ascender)
+                if (cinfos[j].character == '\r' ||
+                    cinfos[j].character == '\n' )
                 {
+                    posBtm = j-1;
                     break;
                 }
             }
 
-            float adjust = 0;
-            if (rubyAdjustByFont != null && rubyAdjustByFont.ContainsKey(Text.font) == true)
+            if (ruby.Word.Length == ruby.RubyWord.Length)
             {
-                adjust = rubyAdjustByFont[Text.font];
+//                ruby.SetTmpInfo2(cinfos, posTop+i, adjust);
+                ruby.SetTmpInfo(cinfos, posTop, posBtm, adjust);
             }
-
-            ruby.SetTmpInfo(cinfos, posTop, posBtm, adjust);
-            ruby.SetFontSize(Text.fontSize);
+            else
+            {
+                ruby.SetTmpInfo(cinfos, posTop, posBtm, adjust);
+            }
+            ruby.SetFontSize(Text.fontSize + fontSizeEx);
             ruby.Refresh();
             ruby.SetActive(true);
         }
