@@ -687,20 +687,6 @@ public class RubyText : MonoBehaviour
     }
     
     /// <summary>
-    /// FontSize
-    /// </summary>
-    /// <returns></returns>
-    public float GetFontSizeMax()
-    {
-        return fontSizeMax;
-    }
-
-    public float GetFontSizeEx()
-    {
-        return fontSizeEx;
-    }
-    
-    /// <summary>
     /// RectH
     /// </summary>
     public void SetHeight(float height)
@@ -712,6 +698,20 @@ public class RubyText : MonoBehaviour
     public float GetHeight()
     {
         return TextRect.GetHeight();
+    }
+
+    /// <summary>
+    /// FontSize
+    /// </summary>
+    /// <returns></returns>
+    public float GetFontSizeMax()
+    {
+        return fontSizeMax;
+    }
+
+    public float GetFontSizeEx()
+    {
+        return fontSizeEx;
     }
 
     /// <summary>
@@ -788,7 +788,7 @@ public class RubyText : MonoBehaviour
     {
         IsFixedPosition = isFixed;
     }
-    
+
     /// <summary>
     /// 文字間を設定
     /// </summary>
@@ -871,7 +871,6 @@ public class RubyText : MonoBehaviour
 
             // 一旦テキストが見えない状態で全テキストを描画する（文字情報を取得するため）
             Text.SetText(message);
-
         }
 
         // １フレーム経過しないと文字情報が更新されない
