@@ -106,7 +106,12 @@ public class RubyText : MonoBehaviour
                 return;
             }
 
-            float textWidth = (characterInfos[posBtm].topRight.x - characterInfos[posTop].topLeft.x);
+            var   top = characterInfos[posTop];
+            var   btm = characterInfos[posBtm];
+
+            float textWidth;
+            
+            textWidth = (btm.topRight.x - top.topLeft.x);
 
             ruby.SetActive(false);
             ruby.SetText(RubyWord);
@@ -122,6 +127,11 @@ public class RubyText : MonoBehaviour
             }
 
             rubyWidth = ruby.preferredWidth;
+            if (Word.Length == RubyWord.Length && Word.Length == 2)
+            {
+                rubyRect.SetWidth(textWidth * 0.7f);
+            }
+            else
             if (rubyWidth < textWidth * 0.9f)
             {
                 rubyRect.SetWidth(textWidth * 0.9f);
@@ -213,27 +223,6 @@ public class RubyText : MonoBehaviour
 
             ruby.color = new Color(r, g, b, 0);
         }
-
-        public void SetTmpInfo2(TMP_CharacterInfo[] characterInfos, int posTop, float rubyPositionAdjust)
-        {
-            this.characterInfos = characterInfos;
-            this.posTop = posTop;
-            this.posBtm = posTop;
-
-            var top = this.characterInfos[posTop];
-            var btm = this.characterInfos[posTop];
-
-            float y = top.ascender + rubyPositionAdjust;
-            float x = (top.topLeft.x + btm.topRight.x) / 2;
-
-            rubyRect.SetXY(x, y);
-
-            float r = (float)this.characterInfos[this.posBtm].color.r / 255;
-            float g = (float)this.characterInfos[this.posBtm].color.g / 255;
-            float b = (float)this.characterInfos[this.posBtm].color.b / 255;
-
-            ruby.color = new Color(r, g, b, 0);
-        }
     }
 
     /// <summary>
@@ -259,11 +248,7 @@ public class RubyText : MonoBehaviour
             Alpha    = 0;
             W        = 0;
             H        = 0;
-#if TextMeshPro_Ver3_2_OR_LATER
             EnableWordWrapping = text.textWrappingMode != TextWrappingModes.NoWrap;
-#else
-            EnableWordWrapping = text.enableWordWrapping == true;
-#endif
         }
     }
 
@@ -274,7 +259,7 @@ public class RubyText : MonoBehaviour
     int                         textRubyCount;
     UpdateComparer              updateComparer;
     TMP_CharacterInfo[]         cinfos;
-    Regex                       searchAlpha = new Regex("<alpha=#[^>]+?>");
+    Regex                       searchAlpha = new Regex("<alpha=#[^>]+?>", RegexOptions.Compiled);
 
     float                       fontSizeMax;
     float                       fontSizeEx;
@@ -299,8 +284,6 @@ public class RubyText : MonoBehaviour
         coText = new CoroutineInfo();
         coAuto = new CoroutineInfo();
 
-        Ruby.font = Text.font;
-        Ruby.fontMaterial = Text.fontMaterial;
         Ruby.SetActive(false);
 
         textRubys = new List<TextRuby>();
@@ -324,11 +307,7 @@ public class RubyText : MonoBehaviour
             update = true;
         }
 
-#if TextMeshPro_Ver3_2_OR_LATER
         bool wrapping = Text.textWrappingMode != TextWrappingModes.NoWrap;
-#else
-        bool wrapping = Text.enableWordWrapping == true;
-#endif
 
         if (updateComparer.EnableWordWrapping != wrapping)
         {
@@ -444,7 +423,7 @@ public class RubyText : MonoBehaviour
         message = _message;
 
         Text.SetText("");
-        Text.fontSizeMax = fontSizeMax;
+        Text.fontSizeMax = fontSizeMax + fontSizeEx;
 
         textRubys.ForEach( ruby => ruby.Clear() );
         textRubyCount = 0;
@@ -958,7 +937,7 @@ public class RubyText : MonoBehaviour
                 {
                     if (alpha == 1 && this.position == GetTextLength()-1)
                     {
-                        msg = searchAlpha.Replace(msg, "", 1);
+                        msg = searchAlpha.Replace(msg, "");
                     }
                     else
                     {
@@ -1059,7 +1038,6 @@ public class RubyText : MonoBehaviour
 
             if (ruby.Word.Length == ruby.RubyWord.Length)
             {
-//                ruby.SetTmpInfo2(cinfos, posTop+i, adjust);
                 ruby.SetTmpInfo(cinfos, posTop, posBtm, adjust);
             }
             else
