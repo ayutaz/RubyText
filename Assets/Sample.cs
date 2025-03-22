@@ -1,48 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Sample : MonoBehaviour
 {
-    [SerializeField]
-    Button       Draw;
+    [SerializeField] private Button Draw;
 
-    [SerializeField]
-    Button       Clear;
+    [SerializeField] private Button Clear;
 
-    [SerializeField]
-    Button       All;
+    [SerializeField] private Button All;
 
-    [SerializeField]
-    Slider       Position;
+    [SerializeField] private Slider Position;
 
-    [SerializeField]
-    Slider       AutoForwardSpeed;
+    [SerializeField] private Slider AutoForwardSpeed;
 
-    [SerializeField]
-    Toggle       IsDrawAtOnce;
+    [SerializeField] private Toggle IsDrawAtOnce;
 
-    [SerializeField]
-    RubyText     RubyText;
+    [SerializeField] private RubyText RubyText;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         RubyText.SetWH(900, 300);
         RubyText.SetFontSize(160);
 
-        RubyText.SetText("‚±‚Ì<color=red>{”:‚©‚¸}</color>‚ÍA{ˆê”Ê“I:‚¢‚Á‚Ï‚ñ‚Ä‚«}‚É\r\nu{ƒi:na}{ƒm:no}v‚Æ‚¢‚¤\r\n{’PˆÊ:‚½‚ñ‚¢}{Ú“ª«:‚¹‚Á‚Æ‚¤‚¶}‚ğ{g—p:‚µ‚æ‚¤}‚µ‚Ä{•\:‚ ‚ç‚í}‚³‚ê‚Ü‚·B");
-
-        // •\¦ˆÊ’u‚Ìİ’è
+        RubyText.SetText(
+            "ã“ã®<color=red>{æ•°:ã‹ãš}</color>ã¯ã€{ä¸€èˆ¬çš„:ã„ã£ã±ã‚“ã¦ã}ã«\r\nã€Œ{ãƒŠ:na}{ãƒ:no}ã€ã¨ã„ã†\r\n{å˜ä½:ãŸã‚“ã„}{æ¥é ­è¾:ã›ã£ã¨ã†ã˜}ã‚’{ä½¿ç”¨:ã—ã‚ˆã†}ã—ã¦{è¡¨:ã‚ã‚‰ã‚}ã•ã‚Œã¾ã™ã€‚");
+        
         Position.onValueChanged.AddListener(
             (val) =>
             {
-                RubyText.ForceTextPosition((int)((float)RubyText.GetTextLength() * val));
+                RubyText.ForceTextPosition((int)(RubyText.GetTextLength() * val));
             }
         );
-
-        // •\¦‘¬“x
+        
         AutoForwardSpeed.value = RubyText.AutoForwardSpeed;
         AutoForwardSpeed.onValueChanged.AddListener(
             (val) =>
@@ -50,9 +40,7 @@ public class Sample : MonoBehaviour
                 RubyText.AutoForwardSpeed = val;
             }
         );
-
-        // true... •¶Í‚ğ‚P“x‚É•\¦
-        // false...‚P•¶š‚¸‚Â•\¦
+        
         IsDrawAtOnce.isOn = RubyText.IsDrawAtOnce;
         IsDrawAtOnce.onValueChanged.AddListener(
             (val) =>
@@ -60,12 +48,11 @@ public class Sample : MonoBehaviour
                 RubyText.IsDrawAtOnce = val;
             }
         );
-
-        // •\¦ŠJn
+        
         Draw.onClick.AddListener(
             () =>
             {
-                RubyText.SetText("‚±‚Ì<color=red>{”:‚©‚¸}</color>‚ÍA{ˆê”Ê“I:‚¢‚Á‚Ï‚ñ‚Ä‚«}‚É\r\nu{ƒi:na}{ƒm:no}v‚Æ‚¢‚¤\r\n{’PˆÊ:‚½‚ñ‚¢}{Ú“ª«:‚¹‚Á‚Æ‚¤‚¶}‚ğ{g—p:‚µ‚æ‚¤}‚µ‚Ä{•\:‚ ‚ç‚í}‚³‚ê‚Ü‚·B");
+                RubyText.SetText("ã“ã®<color=red>{æ•°:ã‹ãš}</color>ã¯ã€{ä¸€èˆ¬çš„:ã„ã£ã±ã‚“ã¦ã}ã«\r\nã€Œ{ãƒŠ:na}{ãƒ:no}ã€ã¨ã„ã†\r\n{å˜ä½:ãŸã‚“ã„}{æ¥é ­è¾:ã›ã£ã¨ã†ã˜}ã‚’{ä½¿ç”¨:ã—ã‚ˆã†}ã—ã¦{è¡¨:ã‚ã‚‰ã‚}ã•ã‚Œã¾ã™ã€‚");
                 RubyText.StartAutoForward();
             }
         );
@@ -83,6 +70,5 @@ public class Sample : MonoBehaviour
                 RubyText.ForceTextDrawAll();
             }
         );
-
     }
 }
